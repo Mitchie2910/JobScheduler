@@ -1,0 +1,29 @@
+services:
+
+  postgres:
+    image: postgres:17
+    container_name: scheduler-postgres
+    environment:
+      POSTGRES_DB: scheduler
+      POSTGRES_USER: scheduler_user
+      POSTGRES_PASSWORD: password
+    ports:
+      - "${DB_PORT}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+
+  app:
+    build: .
+    container_name: job-scheduler
+    depends_on:
+      - postgres
+    ports:
+      - "${APP_PORT}:8080"
+    environment:
+      DB_URL: jdbc:postgresql://${DB_HOST}:5432/${POSTGRES_DB}
+      DB_USERNAME: ${POSTGRES_USER}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+
+volumes:
+  postgres_data:
